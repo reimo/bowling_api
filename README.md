@@ -1,5 +1,10 @@
 # Game
 
+An API to start and and record a bowling game
+
+- Having to support application restart, i when straight to persist game start into postgress db.
+- This can be update later to support an in memory store if load and api response time becomes a concern
+
 ## endpoints
 
 - POST /api/bowling/start Start Game
