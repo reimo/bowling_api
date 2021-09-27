@@ -43,7 +43,7 @@ defmodule Frame do
 
   def roll(%Frame{kind: "strike", fill1: fill1, fill2: nil}, roll)
       when fill1 < @pins and fill1 + roll > @pins do
-    {:error, "Pin count exceeds pins on the lane"}
+    {:error, "Pin  exceeds pins on the lane"}
   end
 
   def roll(%Frame{kind: "strike", score: score, fill2: nil} = frame, roll) do
