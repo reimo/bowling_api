@@ -31,10 +31,6 @@ defmodule GameWeb.BowlingController do
     bowling = PinBowling.get_bowling!(id)
 
     json(conn, %{"score" => PinBowling.score(bowling)})
-
-    # with {:ok, %Bowling{} = bowling} <- PinBowling.score(bowling, roll) do
-    #   render(conn, "score.json", bowling: bowling)
-    # end
   end
 
   def show(conn, %{"id" => id}) do

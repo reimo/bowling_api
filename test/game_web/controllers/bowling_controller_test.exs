@@ -78,6 +78,93 @@ defmodule GameWeb.BowlingControllerTest do
     end
   end
 
+  describe "full game bowling roll" do
+    setup [:create_bowling]
+
+    test "renders bowling start if game ended", %{
+      conn: conn,
+      bowling: %Bowling{id: id} = _bowling
+    } do
+      1..9
+      |> Enum.map(fn _game ->
+        conn
+        |> post(Routes.bowling_path(conn, :roll), %{
+          "id" => id,
+          "roll" => 10
+        })
+        |> json_response(200)
+      end)
+
+      1..4
+      |> Enum.map(fn _game ->
+        conn
+        |> post(Routes.bowling_path(conn, :roll), %{
+          "id" => id,
+          "roll" => 5
+        })
+        |> json_response(200)
+      end)
+
+      response =
+        conn
+        |> get(Routes.bowling_path(conn, :score, id))
+        |> json_response(200)
+
+      assert %{"score" => 270} == response
+    end
+
+    test "renders bowling when strike [ perfect game ]", %{
+      conn: conn,
+      bowling: %Bowling{id: id} = _bowling
+    } do
+      1..12
+      |> Enum.map(fn _game ->
+        conn
+        |> post(Routes.bowling_path(conn, :roll), %{
+          "id" => id,
+          "roll" => 10
+        })
+        |> json_response(200)
+      end)
+
+      response =
+        conn
+        |> get(Routes.bowling_path(conn, :score, id))
+        |> json_response(200)
+
+      assert %{"score" => 300} == response
+    end
+
+    test "renders bowling when spar", %{conn: conn, bowling: %Bowling{id: id} = _bowling} do
+      1..9
+      |> Enum.map(fn _game ->
+        conn
+        |> post(Routes.bowling_path(conn, :roll), %{
+          "id" => id,
+          "roll" => 10
+        })
+        |> json_response(200)
+      end)
+
+      1..3
+      |> Enum.map(fn _game ->
+        conn
+        |> post(Routes.bowling_path(conn, :roll), %{
+          "id" => id,
+          "roll" => 5
+        })
+        |> json_response(200)
+      end)
+
+      response =
+        conn
+        |> get(Routes.bowling_path(conn, :score, id))
+        |> json_response(200)
+
+      assert %{"score" => 270} == response
+    end
+  end
+
   describe "score game " do
     setup [:create_bowling]
 
@@ -144,9 +231,9 @@ defmodule GameWeb.BowlingControllerTest do
       conn = delete(conn, Routes.bowling_path(conn, :delete, bowling))
       assert response(conn, 204)
 
-      assert_error_sent 404, fn ->
+      assert_error_sent(404, fn ->
         get(conn, Routes.bowling_path(conn, :show, bowling))
-      end
+      end)
     end
   end
 
